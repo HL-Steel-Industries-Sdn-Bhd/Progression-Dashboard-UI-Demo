@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>竖屏 · 双表格 Demo</title>
+    <title>竖屏 · 固定宽度 · Tick Box</title>
     <style>
-        /* 全局重置 & 字体 */
         * {
             margin: 0;
             padding: 0;
@@ -14,237 +13,895 @@
         }
 
         body {
-            background: #f5f7fb;
+            background: #f2f5fa;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 16px 12px 40px;
+            padding: 10px 8px 40px;
         }
 
-        /* 手机竖屏容器 – 模拟卡片流 */
         .app-container {
-            max-width: 480px;      /* 典型手机宽度，保证竖屏体验 */
+            max-width: 480px;
             width: 100%;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 10px;
         }
 
-        /* ----- 表格卡片 ----- */
-        .table-card {
+        /* ---- 顶部筛选栏 ---- */
+        .filter-bar {
+            display: flex;
+            gap: 6px;
             background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
-            padding: 20px 16px 18px;
-            transition: all 0.1s ease;
-            border: 1px solid #f0f2f6;
+            border-radius: 16px;
+            padding: 8px 10px;
+            border: 1px solid #edf0f5;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            flex-wrap: nowrap;
+            align-items: center;
+            overflow: hidden;
         }
-
-        /* 表格标题 (类似 iOS 风格) */
-        .table-title {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            color: #1c1e24;
-            padding-bottom: 12px;
-            border-bottom: 1.5px solid #eaeef3;
-            margin-bottom: 16px;
+        .filter-bar label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #4b5a6b;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .filter-bar select {
+            font-size: 11px;
+            padding: 3px 6px;
+            border-radius: 10px;
+            border: 1px solid #dce3ec;
+            background: #f8faff;
+            color: #0b141f;
+            font-weight: 500;
+            outline: none;
+            min-width: 50px;
+            max-width: 90px;
+        }
+        .filter-bar select:focus {
+            border-color: #7b9bcb;
+        }
+        .filter-bar .tick-group {
             display: flex;
             align-items: center;
             gap: 6px;
+            margin-left: 2px;
+            flex-shrink: 0;
         }
-        .table-title small {
-            font-weight: 400;
-            font-size: 12px;
-            color: #7b8591;
-            margin-left: 4px;
-        }
-
-        /* 表格行 – 采用 flex 左标签右值，完全自适应 */
-        .data-row {
+        .filter-bar .tick-group label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #4b5a6b;
             display: flex;
-            flex-wrap: wrap;          /* 允许换行，但通常保持一行 */
-            align-items: baseline;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f4f9;
-            gap: 4px 8px;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            white-space: nowrap;
         }
-        .data-row:last-child {
-            border-bottom: none;
-        }
-
-        /* 左标签：固定宽度但允许收缩，字体略细 */
-        .row-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #3f4a56;
-            min-width: 90px;          /* 保证所有标签对齐 */
-            flex: 0 0 auto;
-            letter-spacing: 0.2px;
+        .filter-bar .tick-group input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            accent-color: #4b7bcb;
+            cursor: pointer;
+            margin: 0;
         }
 
-        /* 右值：自动撑满，可换行，粗体突出数据 */
-        .row-value {
-            font-size: 15px;
-            font-weight: 500;
-            color: #0b0e14;
-            flex: 1 1 auto;           /* 占据剩余空间，允许换行 */
-            word-break: break-word;   /* 长单词/数字自动断行 */
-            line-height: 1.45;
-            background: #fafcff;
-            padding: 2px 8px 2px 6px;
-            border-radius: 8px;
-            margin-left: -4px;        /* 视觉微调 */
-        }
-
-        /* 特殊：第二表格的 Progression 值较长，特别照顾 */
-        .row-value.progression-value {
-            background: #f2f6fe;
-            font-weight: 500;
-            padding: 4px 10px 4px 8px;
+        /* ---- 统一标题行 ---- */
+        .column-titles {
+            display: grid;
+            grid-template-columns: 1fr 55px 40px 55px 60px 50px 22px;
+            gap: 0px;
+            background: #e8edf6;
             border-radius: 12px;
+            padding: 4px 10px;
+            font-weight: 700;
+            font-size: 10px;
+            color: #2d3d53;
+            letter-spacing: 0.3px;
+            border: 1px solid #d5dde8;
+            align-items: center;
+        }
+        .column-titles span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+        }
+        /* Customer 往右 20px */
+        .column-titles span:nth-child(1) {
+            padding-left: 20px;
+        }
+        /* SO 往左 20px - 用 text-indent */
+        .column-titles span:nth-child(2) {
+            text-align: center;
+            text-indent: -20px;
+        }
+        /* SKU 往左 2px */
+        .column-titles span:nth-child(3) {
+            text-align: center;
+            text-indent: -2px;
+        }
+        /* T.Qty 往左 12px */
+        .column-titles span:nth-child(4) {
+            text-align: right;
+            text-indent: -12px;
+        }
+        /* EDD 往左 15px */
+        .column-titles span:nth-child(5) {
+            text-align: center;
+            text-indent: -15px;
+        }
+        .column-titles span:nth-child(6) {
+            text-align: center;
+        }
+        .column-titles .spacer {
+            visibility: hidden;
         }
 
-        /* 点缀小标签 (Unit 数字加一点背景) */
-        .row-value.unit-highlight {
-            background: #eef3fa;
-            font-weight: 600;
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+            padding: 8px 10px 10px;
+            border: 1px solid #edf0f5;
         }
 
-        /* 第二表格的 Item No. 等数字可以稍作强调 */
-        .row-value.code-style {
-            font-family: 'SF Mono', 'Menlo', monospace;
-            letter-spacing: 0.2px;
-        }
-
-        /* 间距调整 */
-        .table-card + .table-card {
-            margin-top: 0;
-        }
-
-        /* 让两个表格宽度严格一致 (父容器约束) */
-        .app-container .table-card {
-            width: 100%;
-        }
-
-        /* 极窄屏适配 (宽度<360px) 标签可更紧凑 */
-        @media (max-width: 380px) {
-            .row-label {
-                min-width: 70px;
-                font-size: 13px;
-            }
-            .row-value {
-                font-size: 14px;
-            }
-            .table-card {
-                padding: 16px 12px;
-            }
-        }
-
-        /* 稍微增加行内间距，让空气感更舒服 */
-        .data-row:first-child {
-            padding-top: 0;
-        }
-
-        /* 标题右侧可加小灰点装饰（纯粹好看） */
-        .table-title::after {
-            content: '';
-            margin-left: auto;
-            width: 6px;
-            height: 6px;
-            background: #d0d9e6;
+        /* ---- 主行 (固定宽度) ---- */
+        .master-row {
+            display: grid;
+            grid-template-columns: 1fr 55px 40px 55px 60px 50px 22px;
+            gap: 0px;
+            padding: 4px 10px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            align-items: center;
+            min-height: 32px;
             border-radius: 10px;
-            opacity: 0.5;
+            transition: background 0.1s;
+        }
+        .master-row:active {
+            background: #f0f4fc;
         }
 
-        /* 针对长内容（例如 FUJIMAK @ SUSHIRO ...）强制断行 */
-        .row-value {
-            hyphens: auto;
+        .master-cell {
+            font-size: 11px;
+            font-weight: 500;
+            color: #0b141f;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 2px;
+            line-height: 1.3;
+        }
+        .master-cell.cust {
+            font-weight: 500;
+            color: #1a2a3a;
+        }
+        .master-cell.so {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #0047a0;
+            text-align: center;
+        }
+        .master-cell.sku {
+            font-weight: 600;
+            text-align: center;
+        }
+        .master-cell.tqty {
+            font-weight: 600;
+            text-align: right;
+            color: #0047a0;
+        }
+        .master-cell.edd {
+            font-weight: 600;
+            text-align: center;
+            color: #8a4a2a;
+        }
+        .master-cell.status {
+            font-weight: 700;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 8px;
+            justify-self: center;
+            min-width: 32px;
+        }
+        .master-cell.status.remain {
+            background: #e6f0e6;
+            color: #2a7a2a;
+        }
+        .master-cell.status.exceed {
+            background: #fde8e8;
+            color: #cc3333;
         }
 
-        /* 可选：卡片 hover 微反馈 (移动端无 hover, 但保留) */
-        @media (hover: hover) {
-            .table-card:hover {
-                border-color: #d9e1ec;
-                box-shadow: 0 10px 24px rgba(0,0,0,0.04);
+        .toggle-icon {
+            font-size: 13px;
+            color: #6f7d8f;
+            background: #f0f4fc;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            justify-self: end;
+        }
+        .toggle-icon.open {
+            transform: rotate(180deg);
+            background: #e4ebf6;
+        }
+
+        /* ---- 明细列表 ---- */
+        .detail-list {
+            margin-top: 6px;
+            padding-top: 4px;
+            border-top: 1.5px dashed #dee6f0;
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            animation: fadeSlide 0.15s ease;
+        }
+        .detail-list.open {
+            display: flex;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(-4px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---- 明细列标题 ---- */
+        .detail-header {
+            display: grid;
+            grid-template-columns: 44px 1.8fr 50px 1fr 16px;
+            gap: 4px 8px;
+            background: #eef3fb;
+            border-radius: 16px;
+            padding: 5px 10px;
+            font-weight: 600;
+            font-size: 10px;
+            color: #2d3d53;
+            letter-spacing: 0.2px;
+            border: 1px solid #e0e8f2;
+            margin-bottom: 1px;
+        }
+        .detail-header span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .detail-header span:nth-child(3) {
+            text-align: right;
+        }
+        .detail-header .spacer {
+            visibility: hidden;
+        }
+
+        /* ---- 明细行 ---- */
+        .detail-row {
+            display: grid;
+            grid-template-columns: 44px 1.8fr 50px 1fr 16px;
+            gap: 4px 8px;
+            padding: 6px 10px;
+            background: #fafcff;
+            border-radius: 14px;
+            border: 1px solid #eef3f9;
+            transition: background 0.1s;
+            align-items: center;
+            font-size: 11.5px;
+            color: #14212e;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+        .detail-row:active {
+            background: #e8effa;
+        }
+
+        .detail-cell {
+            word-break: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.3;
+            padding: 1px 0;
+            grid-row: 1;
+        }
+        .detail-cell.item-no {
+            font-weight: 500;
+            color: #0047a0;
+        }
+        .detail-cell.unit {
+            font-weight: 600;
+            color: #0047a0;
+            text-align: right;
+        }
+        .detail-cell.progression {
+            font-style: italic;
+            color: #1f3a5e;
+            font-size: 10.5px;
+            max-width: 100px;
+        }
+
+        .row-expand-icon {
+            grid-row: 1;
+            grid-column: 5;
+            justify-self: end;
+            font-size: 12px;
+            color: #8a9aad;
+            transition: transform 0.2s ease;
+        }
+        .row-expand-icon.open {
+            transform: rotate(180deg);
+        }
+
+        /* ---- 展开的详情 ---- */
+        .row-detail {
+            display: none;
+            grid-row: 2;
+            grid-column: 1 / -1;
+            background: #f4f9ff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-top: 3px;
+            border: 1px solid #e2ebf6;
+            gap: 4px;
+            flex-direction: column;
+            animation: fadeSlide 0.12s ease;
+        }
+        .row-detail.open {
+            display: flex;
+        }
+
+        .row-detail .detail-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            font-size: 11.5px;
+            line-height: 1.4;
+        }
+        .row-detail .detail-item .dlabel {
+            font-weight: 600;
+            color: #3a546e;
+            min-width: 58px;
+            font-size: 10.5px;
+            letter-spacing: 0.1px;
+        }
+        .row-detail .detail-item .dvalue {
+            color: #0b1a2b;
+            word-break: break-word;
+            font-weight: 450;
+            font-size: 11.5px;
+        }
+
+        .footnote {
+            font-size: 10px;
+            color: #8b99aa;
+            text-align: center;
+            padding: 8px 0 2px;
+            letter-spacing: 0.2px;
+            border-top: 1px solid #e9eef5;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 420px) {
+            .column-titles {
+                grid-template-columns: 1fr 45px 32px 45px 50px 40px 20px;
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+            .column-titles span:nth-child(1) {
+                padding-left: 12px;
+            }
+            .column-titles span:nth-child(2) {
+                text-indent: -12px;
+            }
+            .column-titles span:nth-child(3) {
+                text-indent: -2px;
+            }
+            .column-titles span:nth-child(4) {
+                text-indent: -8px;
+            }
+            .column-titles span:nth-child(5) {
+                text-indent: -10px;
+            }
+            .master-row {
+                grid-template-columns: 1fr 45px 32px 45px 50px 40px 20px;
+                padding: 3px 6px;
+                min-height: 28px;
+            }
+            .master-cell {
+                font-size: 10px;
+            }
+            .master-cell.status {
+                font-size: 9px;
+                min-width: 28px;
+                padding: 1px 3px;
+            }
+            .toggle-icon {
+                width: 18px;
+                height: 18px;
+                font-size: 11px;
+            }
+            .detail-header {
+                grid-template-columns: 36px 1.6fr 40px 1fr 14px;
+                font-size: 9px;
+                padding: 4px 6px;
+                gap: 3px;
+            }
+            .detail-row {
+                grid-template-columns: 36px 1.6fr 40px 1fr 14px;
+                padding: 5px 6px;
+                font-size: 10.5px;
+                gap: 3px;
+            }
+            .card {
+                padding: 6px 6px 8px;
+            }
+            .filter-bar {
+                padding: 6px 8px;
+                gap: 4px;
+            }
+            .filter-bar select {
+                font-size: 10px;
+                min-width: 40px;
+                max-width: 70px;
+                padding: 2px 4px;
+            }
+            .filter-bar label {
+                font-size: 9px;
+            }
+            .filter-bar .tick-group label {
+                font-size: 9px;
+            }
+            .filter-bar .tick-group input[type="checkbox"] {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        @media (max-width: 370px) {
+            .column-titles {
+                grid-template-columns: 1fr 38px 28px 38px 42px 34px 18px;
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+            .column-titles span:nth-child(1) {
+                padding-left: 8px;
+            }
+            .column-titles span:nth-child(2) {
+                text-indent: -8px;
+            }
+            .column-titles span:nth-child(3) {
+                text-indent: -1px;
+            }
+            .column-titles span:nth-child(4) {
+                text-indent: -5px;
+            }
+            .column-titles span:nth-child(5) {
+                text-indent: -6px;
+            }
+            .master-row {
+                grid-template-columns: 1fr 38px 28px 38px 42px 34px 18px;
+                padding: 2px 4px;
+                min-height: 24px;
+            }
+            .master-cell {
+                font-size: 9px;
+            }
+            .master-cell.status {
+                font-size: 8px;
+                min-width: 24px;
+                padding: 1px 2px;
+            }
+            .toggle-icon {
+                width: 16px;
+                height: 16px;
+                font-size: 9px;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- ========== 表格 1：客户订单信息 ========== -->
-        <div class="table-card">
-            <div class="table-title">
-                📋 订单信息 <small>· 上部</small>
-            </div>
 
-            <!-- Cust. Name -->
-            <div class="data-row">
-                <span class="row-label">Cust. Name</span>
-                <span class="row-value">FUJIMAK @ SUSHIRO AT CHINATOWN POINT #02-35</span>
-            </div>
-            <!-- SO No. -->
-            <div class="data-row">
-                <span class="row-label">SO No.</span>
-                <span class="row-value code-style">SO-008096</span>
-            </div>
-            <!-- Dely Date -->
-            <div class="data-row">
-                <span class="row-label">Dely Date</span>
-                <span class="row-value">24/07/2026 (FRI)</span>
-            </div>
-            <!-- SKU Count -->
-            <div class="data-row">
-                <span class="row-label">SKU Count</span>
-                <span class="row-value">100</span>
-            </div>
-            <!-- Total Qty -->
-            <div class="data-row">
-                <span class="row-label">Total Qty</span>
-                <span class="row-value unit-highlight">10,000</span>
+        <!-- 顶部筛选栏 -->
+        <div class="filter-bar">
+            <label>
+                Year
+                <select id="yearSelect">
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+            </label>
+            <label>
+                WF
+                <select id="workflowSelect">
+                    <option value="1">Work Flow 1</option>
+                    <option value="2">Work Flow 2</option>
+                    <option value="3">Work Flow 3</option>
+                    <option value="4">Work Flow 4</option>
+                    <option value="5">Work Flow 5</option>
+                    <option value="6">Work Flow 6</option>
+                    <option value="7">Work Flow 7</option>
+                    <option value="8">Work Flow 8</option>
+                    <option value="9">Work Flow 9</option>
+                    <option value="10">Work Flow 10</option>
+                    <option value="11">Work Flow 11</option>
+                    <option value="12">Work Flow 12</option>
+                </select>
+            </label>
+            <label>
+                Sort by
+                <select id="sortSelect">
+                    <option value="exceed">Exceed</option>
+                    <option value="remaining">Remaining</option>
+                    <option value="generation">Generation</option>
+                </select>
+            </label>
+            <div class="tick-group">
+                <label>
+                    <input type="checkbox" id="chkAll"> All
+                </label>
+                <label>
+                    <input type="checkbox" id="chkCurrentWF" checked> Current WF
+                </label>
             </div>
         </div>
 
-        <!-- ========== 表格 2：产品明细 ========== -->
-        <div class="table-card">
-            <div class="table-title">
-                📦 产品明细 <small>· 下部</small>
-            </div>
+        <!-- 统一标题行 -->
+        <div class="column-titles">
+            <span>Customer</span>
+            <span>SO</span>
+            <span>SKU</span>
+            <span>T.Qty</span>
+            <span>EDD</span>
+            <span>Status</span>
+            <span class="spacer"></span>
+        </div>
 
-            <!-- Item No. -->
-            <div class="data-row">
-                <span class="row-label">Item No.</span>
-                <span class="row-value code-style">100</span>
+        <!-- ===== 卡片 1 (Remain +5) ===== -->
+        <div class="card">
+            <div class="master-row" id="masterToggle1">
+                <span class="master-cell cust" id="cust1">FUJIMAK @ SUSHIRO AT CHINATOWN POINT #02-35</span>
+                <span class="master-cell so">008096</span>
+                <span class="master-cell sku">100</span>
+                <span class="master-cell tqty">10,000</span>
+                <span class="master-cell edd" id="edd1">24/07/26</span>
+                <span class="master-cell status remain" id="status1">+5</span>
+                <span class="toggle-icon" id="toggleIcon1">▾</span>
             </div>
-            <!-- Item Name -->
-            <div class="data-row">
-                <span class="row-label">Item Name</span>
-                <span class="row-value">S/S Cutlery Storage Cabinet</span>
-            </div>
-            <!-- Sub Name -->
-            <div class="data-row">
-                <span class="row-label">Sub Name</span>
-                <span class="row-value">With Hot Water Disinfection Compartment</span>
-            </div>
-            <!-- Unit -->
-            <div class="data-row">
-                <span class="row-label">Unit</span>
-                <span class="row-value unit-highlight">10,000</span>
-            </div>
-            <!-- Progression (长文本) -->
-            <div class="data-row">
-                <span class="row-label">Progression</span>
-                <span class="row-value progression-value">Document Control: Checked &amp; Stamped (文件管理: 检查盖章)</span>
+            <div class="detail-list" id="detailList1">
+                <div class="detail-header">
+                    <span>Item</span>
+                    <span>Item Name</span>
+                    <span>Unit</span>
+                    <span>Progression</span>
+                    <span class="spacer"></span>
+                </div>
             </div>
         </div>
 
-        <!-- 注：以下仅用于演示“文字塞不塞得进”的辅助信息，不影响表格结构 -->
-        <div style="font-size: 12px; color: #8b95a5; text-align: center; padding: 12px 8px 4px; border-top: 1px dashed #dce3ec; margin-top: 8px; letter-spacing: 0.3px;">
-            ⚡ 竖屏 · 双表格等宽 · 所有文字均自适应换行
+        <!-- ===== 卡片 2 (Exceed -4) ===== -->
+        <div class="card">
+            <div class="master-row" id="masterToggle2">
+                <span class="master-cell cust" id="cust2">ICHIBAN @ PLAZA SINGAPURA #03-12</span>
+                <span class="master-cell so">008512</span>
+                <span class="master-cell sku">75</span>
+                <span class="master-cell tqty">7,500</span>
+                <span class="master-cell edd" id="edd2">20/07/26</span>
+                <span class="master-cell status exceed" id="status2">-4</span>
+                <span class="toggle-icon" id="toggleIcon2">▾</span>
+            </div>
+            <div class="detail-list" id="detailList2">
+                <div class="detail-header">
+                    <span>Item</span>
+                    <span>Item Name</span>
+                    <span>Unit</span>
+                    <span>Progression</span>
+                    <span class="spacer"></span>
+                </div>
+            </div>
         </div>
+
+        <!-- ===== 卡片 3 (Remain +8) ===== -->
+        <div class="card">
+            <div class="master-row" id="masterToggle3">
+                <span class="master-cell cust" id="cust3">SAKURA @ JURONG POINT #B1-08</span>
+                <span class="master-cell so">009234</span>
+                <span class="master-cell sku">120</span>
+                <span class="master-cell tqty">12,000</span>
+                <span class="master-cell edd" id="edd3">01/08/26</span>
+                <span class="master-cell status remain" id="status3">+8</span>
+                <span class="toggle-icon" id="toggleIcon3">▾</span>
+            </div>
+            <div class="detail-list" id="detailList3">
+                <div class="detail-header">
+                    <span>Item</span>
+                    <span>Item Name</span>
+                    <span>Unit</span>
+                    <span>Progression</span>
+                    <span class="spacer"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 卡片 4 (Exceed -9) ===== -->
+        <div class="card">
+            <div class="master-row" id="masterToggle4">
+                <span class="master-cell cust" id="cust4">HANA @ BUGIS JUNCTION #02-18</span>
+                <span class="master-cell so">009876</span>
+                <span class="master-cell sku">45</span>
+                <span class="master-cell tqty">4,500</span>
+                <span class="master-cell edd" id="edd4">15/07/26</span>
+                <span class="master-cell status exceed" id="status4">-9</span>
+                <span class="toggle-icon" id="toggleIcon4">▾</span>
+            </div>
+            <div class="detail-list" id="detailList4">
+                <div class="detail-header">
+                    <span>Item</span>
+                    <span>Item Name</span>
+                    <span>Unit</span>
+                    <span>Progression</span>
+                    <span class="spacer"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 卡片 5 (Remain +12) ===== -->
+        <div class="card">
+            <div class="master-row" id="masterToggle5">
+                <span class="master-cell cust" id="cust5">YUKI @ VIVOCITY #01-22</span>
+                <span class="master-cell so">010023</span>
+                <span class="master-cell sku">200</span>
+                <span class="master-cell tqty">20,000</span>
+                <span class="master-cell edd" id="edd5">05/08/26</span>
+                <span class="master-cell status remain" id="status5">+12</span>
+                <span class="toggle-icon" id="toggleIcon5">▾</span>
+            </div>
+            <div class="detail-list" id="detailList5">
+                <div class="detail-header">
+                    <span>Item</span>
+                    <span>Item Name</span>
+                    <span>Unit</span>
+                    <span>Progression</span>
+                    <span class="spacer"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footnote">点击主行展开明细 · 点击明细行展开Sub/Dim · 红色背景 = Exceed</div>
     </div>
+
+    <script>
+        (function() {
+            // ---------- 计算 Remaining Days ----------
+            function calcRemaining(eddStr) {
+                const today = new Date();
+                const parts = eddStr.split('/');
+                if (parts.length !== 3) return '?';
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                let year = parseInt(parts[2]);
+                if (year < 100) year += 2000;
+                const eddDate = new Date(year, month, day);
+                const diff = Math.ceil((eddDate - today) / (1000 * 60 * 60 * 24));
+                return diff;
+            }
+
+            function updateStatus() {
+                const eddIds = ['edd1', 'edd2', 'edd3', 'edd4', 'edd5'];
+                const statusIds = ['status1', 'status2', 'status3', 'status4', 'status5'];
+                for (let i = 0; i < eddIds.length; i++) {
+                    const eddEl = document.getElementById(eddIds[i]);
+                    const statusEl = document.getElementById(statusIds[i]);
+                    if (eddEl && statusEl) {
+                        const diff = calcRemaining(eddEl.textContent.trim());
+                        if (diff >= 0) {
+                            statusEl.textContent = '+' + diff;
+                            statusEl.className = 'master-cell status remain';
+                        } else {
+                            statusEl.textContent = '' + diff;
+                            statusEl.className = 'master-cell status exceed';
+                        }
+                    }
+                }
+            }
+
+            // ---------- 生成明细数据 ----------
+            function generateDetails(prefix, count = 7) {
+                const list = [];
+                const baseNames = [
+                    'S/S Cutlery Cabinet',
+                    'SS Work Table',
+                    'Commercial Fridge',
+                    'Induction Cooktop',
+                    'Exhaust Hood',
+                    'Sink Basin',
+                    'Shelving Rack'
+                ];
+                for (let i = 0; i < count; i++) {
+                    const idx = i % baseNames.length;
+                    const suffix = i + 1;
+                    list.push({
+                        itemNo: `${prefix}${String(100 + i).padStart(3, '0')}`,
+                        itemName: `${baseNames[idx]} #${suffix}`,
+                        unit: `${(10000 + i * 150 + (prefix * 200)).toLocaleString()}`,
+                        progression: `Doc: Checked ${i+1}`,
+                        subName: `S/S ANGLE BAR CLOSE GAP ${i+1}`,
+                        dimension: `L${800+i*50} W${750+i*30}/${620+i*20} H${1000+i*40}/${1850+i*30}`
+                    });
+                }
+                return list;
+            }
+
+            // ---------- 截断工具 ----------
+            function truncateText(text, maxLen = 16) {
+                if (!text) return '';
+                if (text.length <= maxLen) return text;
+                return text.slice(0, maxLen) + '…';
+            }
+
+            // ---------- 渲染明细 ----------
+            function renderDetailList(containerId, data) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const header = container.querySelector('.detail-header');
+                container.innerHTML = '';
+                container.appendChild(header);
+
+                data.forEach((item) => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-row';
+
+                    const cellNo = createCell(item.itemNo, 'item-no');
+                    const cellName = createCell(truncateText(item.itemName, 28), 'item-name');
+                    const cellUnit = createCell(item.unit, 'unit');
+                    const cellProg = createCell(truncateText(item.progression, 12), 'progression');
+
+                    const arrow = document.createElement('span');
+                    arrow.className = 'row-expand-icon';
+                    arrow.textContent = '▾';
+
+                    const detailDiv = document.createElement('div');
+                    detailDiv.className = 'row-detail';
+
+                    const subItem = document.createElement('div');
+                    subItem.className = 'detail-item';
+                    subItem.innerHTML = `<span class="dlabel">Sub</span><span class="dvalue">${item.subName}</span>`;
+
+                    const dimItem = document.createElement('div');
+                    dimItem.className = 'detail-item';
+                    dimItem.innerHTML = `<span class="dlabel">Dim</span><span class="dvalue">${item.dimension}</span>`;
+
+                    detailDiv.appendChild(subItem);
+                    detailDiv.appendChild(dimItem);
+
+                    row.appendChild(cellNo);
+                    row.appendChild(cellName);
+                    row.appendChild(cellUnit);
+                    row.appendChild(cellProg);
+                    row.appendChild(arrow);
+                    row.appendChild(detailDiv);
+
+                    row.addEventListener('click', function(e) {
+                        if (e.target.closest('.row-detail')) return;
+                        const isOpen = detailDiv.classList.contains('open');
+                        if (isOpen) {
+                            detailDiv.classList.remove('open');
+                            arrow.classList.remove('open');
+                        } else {
+                            detailDiv.classList.add('open');
+                            arrow.classList.add('open');
+                        }
+                    });
+
+                    container.appendChild(row);
+                });
+            }
+
+            function createCell(text, extraClass = '') {
+                const div = document.createElement('div');
+                div.className = `detail-cell ${extraClass}`;
+                div.textContent = text;
+                return div;
+            }
+
+            // ---------- 初始化 5 个卡片 ----------
+            const data1 = generateDetails(1, 7);
+            const data2 = generateDetails(2, 7);
+            const data3 = generateDetails(3, 7);
+            const data4 = generateDetails(4, 7);
+            const data5 = generateDetails(5, 7);
+
+            renderDetailList('detailList1', data1);
+            renderDetailList('detailList2', data2);
+            renderDetailList('detailList3', data3);
+            renderDetailList('detailList4', data4);
+            renderDetailList('detailList5', data5);
+
+            updateStatus();
+
+            // ---------- 主行展开/收起 ----------
+            function setupMasterToggle(toggleId, listId, iconId) {
+                const toggle = document.getElementById(toggleId);
+                const list = document.getElementById(listId);
+                const icon = document.getElementById(iconId);
+                if (!toggle || !list || !icon) return;
+
+                let isOpen = false;
+                toggle.addEventListener('click', function(e) {
+                    isOpen = !isOpen;
+                    if (isOpen) {
+                        list.classList.add('open');
+                        icon.classList.add('open');
+                    } else {
+                        list.classList.remove('open');
+                        icon.classList.remove('open');
+                    }
+                });
+            }
+
+            setupMasterToggle('masterToggle1', 'detailList1', 'toggleIcon1');
+            setupMasterToggle('masterToggle2', 'detailList2', 'toggleIcon2');
+            setupMasterToggle('masterToggle3', 'detailList3', 'toggleIcon3');
+            setupMasterToggle('masterToggle4', 'detailList4', 'toggleIcon4');
+            setupMasterToggle('masterToggle5', 'detailList5', 'toggleIcon5');
+
+            // ---------- 下拉菜单事件 ----------
+            document.getElementById('yearSelect').addEventListener('change', function() {
+                console.log('Year selected:', this.value);
+            });
+            document.getElementById('workflowSelect').addEventListener('change', function() {
+                console.log('Work Flow selected:', this.value);
+            });
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                console.log('Sort by selected:', this.value);
+            });
+
+            // ---------- Tick Box 互斥逻辑 ----------
+            const chkAll = document.getElementById('chkAll');
+            const chkCurrentWF = document.getElementById('chkCurrentWF');
+
+            // 默认 Current WF 是勾选的
+            chkCurrentWF.checked = true;
+            chkAll.checked = false;
+
+            chkAll.addEventListener('change', function() {
+                if (this.checked) {
+                    chkCurrentWF.checked = false;
+                } else {
+                    if (!chkCurrentWF.checked) {
+                        chkCurrentWF.checked = true;
+                    }
+                }
+                console.log('All:', chkAll.checked, 'Current WF:', chkCurrentWF.checked);
+            });
+
+            chkCurrentWF.addEventListener('change', function() {
+                if (this.checked) {
+                    chkAll.checked = false;
+                } else {
+                    if (!chkAll.checked) {
+                        chkCurrentWF.checked = true;
+                    }
+                }
+                console.log('All:', chkAll.checked, 'Current WF:', chkCurrentWF.checked);
+            });
+
+        })();
+    </script>
 </body>
 </html>
