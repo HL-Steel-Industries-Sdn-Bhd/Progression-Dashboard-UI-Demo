@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>竖屏 · 双表格 Demo</title>
+    <style>
+        /* 全局重置 & 字体 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px 12px 40px;
+        }
+
+        /* 手机竖屏容器 – 模拟卡片流 */
+        .app-container {
+            max-width: 480px;      /* 典型手机宽度，保证竖屏体验 */
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ----- 表格卡片 ----- */
+        .table-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+            padding: 20px 16px 18px;
+            transition: all 0.1s ease;
+            border: 1px solid #f0f2f6;
+        }
+
+        /* 表格标题 (类似 iOS 风格) */
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #1c1e24;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid #eaeef3;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .table-title small {
+            font-weight: 400;
+            font-size: 12px;
+            color: #7b8591;
+            margin-left: 4px;
+        }
+
+        /* 表格行 – 采用 flex 左标签右值，完全自适应 */
+        .data-row {
+            display: flex;
+            flex-wrap: wrap;          /* 允许换行，但通常保持一行 */
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f9;
+            gap: 4px 8px;
+        }
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        /* 左标签：固定宽度但允许收缩，字体略细 */
+        .row-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #3f4a56;
+            min-width: 90px;          /* 保证所有标签对齐 */
+            flex: 0 0 auto;
+            letter-spacing: 0.2px;
+        }
+
+        /* 右值：自动撑满，可换行，粗体突出数据 */
+        .row-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0b0e14;
+            flex: 1 1 auto;           /* 占据剩余空间，允许换行 */
+            word-break: break-word;   /* 长单词/数字自动断行 */
+            line-height: 1.45;
+            background: #fafcff;
+            padding: 2px 8px 2px 6px;
+            border-radius: 8px;
+            margin-left: -4px;        /* 视觉微调 */
+        }
+
+        /* 特殊：第二表格的 Progression 值较长，特别照顾 */
+        .row-value.progression-value {
+            background: #f2f6fe;
+            font-weight: 500;
+            padding: 4px 10px 4px 8px;
+            border-radius: 12px;
+        }
+
+        /* 点缀小标签 (Unit 数字加一点背景) */
+        .row-value.unit-highlight {
+            background: #eef3fa;
+            font-weight: 600;
+        }
+
+        /* 第二表格的 Item No. 等数字可以稍作强调 */
+        .row-value.code-style {
+            font-family: 'SF Mono', 'Menlo', monospace;
+            letter-spacing: 0.2px;
+        }
+
+        /* 间距调整 */
+        .table-card + .table-card {
+            margin-top: 0;
+        }
+
+        /* 让两个表格宽度严格一致 (父容器约束) */
+        .app-container .table-card {
+            width: 100%;
+        }
+
+        /* 极窄屏适配 (宽度<360px) 标签可更紧凑 */
+        @media (max-width: 380px) {
+            .row-label {
+                min-width: 70px;
+                font-size: 13px;
+            }
+            .row-value {
+                font-size: 14px;
+            }
+            .table-card {
+                padding: 16px 12px;
+            }
+        }
+
+        /* 稍微增加行内间距，让空气感更舒服 */
+        .data-row:first-child {
+            padding-top: 0;
+        }
+
+        /* 标题右侧可加小灰点装饰（纯粹好看） */
+        .table-title::after {
+            content: '';
+            margin-left: auto;
+            width: 6px;
+            height: 6px;
+            background: #d0d9e6;
+            border-radius: 10px;
+            opacity: 0.5;
+        }
+
+        /* 针对长内容（例如 FUJIMAK @ SUSHIRO ...）强制断行 */
+        .row-value {
+            hyphens: auto;
+        }
+
+        /* 可选：卡片 hover 微反馈 (移动端无 hover, 但保留) */
+        @media (hover: hover) {
+            .table-card:hover {
+                border-color: #d9e1ec;
+                box-shadow: 0 10px 24px rgba(0,0,0,0.04);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ========== 表格 1：客户订单信息 ========== -->
+        <div class="table-card">
+            <div class="table-title">
+                📋 订单信息 <small>· 上部</small>
+            </div>
+
+            <!-- Cust. Name -->
+            <div class="data-row">
+                <span class="row-label">Cust. Name</span>
+                <span class="row-value">FUJIMAK @ SUSHIRO AT CHINATOWN POINT #02-35</span>
+            </div>
+            <!-- SO No. -->
+            <div class="data-row">
+                <span class="row-label">SO No.</span>
+                <span class="row-value code-style">SO-008096</span>
+            </div>
+            <!-- Dely Date -->
+            <div class="data-row">
+                <span class="row-label">Dely Date</span>
+                <span class="row-value">24/07/2026 (FRI)</span>
+            </div>
+            <!-- SKU Count -->
+            <div class="data-row">
+                <span class="row-label">SKU Count</span>
+                <span class="row-value">100</span>
+            </div>
+            <!-- Total Qty -->
+            <div class="data-row">
+                <span class="row-label">Total Qty</span>
+                <span class="row-value unit-highlight">10,000</span>
+            </div>
+        </div>
+
+        <!-- ========== 表格 2：产品明细 ========== -->
+        <div class="table-card">
+            <div class="table-title">
+                📦 产品明细 <small>· 下部</small>
+            </div>
+
+            <!-- Item No. -->
+            <div class="data-row">
+                <span class="row-label">Item No.</span>
+                <span class="row-value code-style">100</span>
+            </div>
+            <!-- Item Name -->
+            <div class="data-row">
+                <span class="row-label">Item Name</span>
+                <span class="row-value">S/S Cutlery Storage Cabinet</span>
+            </div>
+            <!-- Sub Name -->
+            <div class="data-row">
+                <span class="row-label">Sub Name</span>
+                <span class="row-value">With Hot Water Disinfection Compartment</span>
+            </div>
+            <!-- Unit -->
+            <div class="data-row">
+                <span class="row-label">Unit</span>
+                <span class="row-value unit-highlight">10,000</span>
+            </div>
+            <!-- Progression (长文本) -->
+            <div class="data-row">
+                <span class="row-label">Progression</span>
+                <span class="row-value progression-value">Document Control: Checked &amp; Stamped (文件管理: 检查盖章)</span>
+            </div>
+        </div>
+
+        <!-- 注：以下仅用于演示“文字塞不塞得进”的辅助信息，不影响表格结构 -->
+        <div style="font-size: 12px; color: #8b95a5; text-align: center; padding: 12px 8px 4px; border-top: 1px dashed #dce3ec; margin-top: 8px; letter-spacing: 0.3px;">
+            ⚡ 竖屏 · 双表格等宽 · 所有文字均自适应换行
+        </div>
+    </div>
+</body>
+</html>
